@@ -107,6 +107,7 @@ nav {
     align-items: center;
     gap: 10px;
     margin-right: auto;
+    min-width: 0; /* helps prevent overflow on tiny screens */
 }
 
 .logo {
@@ -116,6 +117,7 @@ nav {
     color: #fff;
     text-decoration: none;
     text-shadow: 0 0 10px rgba(255,153,0,0.55);
+    white-space: nowrap;
 }
 
 .logo-image {
@@ -224,11 +226,16 @@ button:focus-visible {
 }
 
 /* ===== PROJECTS ===== */
+/* FIX (minimal + mobile-safe): clamp + wrapping so "Development" never spills */
 .section-title {
-    font-size: 46px;
+    font-size: clamp(28px, 7vw, 46px);
     font-weight: 800;
     text-align: center;
     margin-bottom: 60px;
+    line-height: 1.1;
+    overflow-wrap: anywhere; /* prevents iPhone overflow */
+    word-break: normal;
+    padding: 0 6px; /* tiny breathing room on narrow screens */
 }
 
 /* Slideshow */
@@ -243,7 +250,7 @@ button:focus-visible {
     border: 1px solid rgba(255,255,255,0.06);
 }
 
-/* IMPORTANT: transition duration = 1.33s */
+/* IMPORTANT: transition duration = FAST (keep hold time via JS cadence) */
 .slide {
     position: absolute;
     inset: 0;
@@ -352,14 +359,29 @@ footer p {
     }
     .nav-links.active { display: flex; }
 
+    /* Mobile layout tightening (minimal + performance-safe) */
+    .container { padding: 0 16px; }
+
     .glass-box {
         padding: 50px 22px;
         margin: 80px 16px;
         backdrop-filter: blur(8px);
     }
 
+    .about-inner h2 { font-size: 34px; }
+    .about-inner p { font-size: 16px; }
+
     .slideshow { height: 320px; }
     .slide-arrow { width: 44px; height: 44px; font-size: 24px; line-height: 44px; }
+}
+
+/* Extra-small phones (iPhone mini / SE) */
+@media (max-width: 420px) {
+    .glass-box { padding: 44px 18px; margin: 70px 12px; }
+    .section-title { margin-bottom: 44px; }
+    .hero h2 { font-size: 1.15rem; }
+    .cta-button { padding: 14px 34px; font-size: 15px; }
+    .logo { font-size: 18px; }
 }
 </style>
 </head>
@@ -487,14 +509,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     });
 });
 
-/* ===== SCROLL-SYNC BACKGROUND VIDEO (TOP = END, BOTTOM = START) =====
-   Fix: remove the large seek threshold and use fastSeek when available,
-   so frames start changing immediately on the first pixels of scroll. */
+/* ===== SCROLL-SYNC BACKGROUND VIDEO (TOP = END, BOTTOM = START) ===== */
 const bgVideo = document.getElementById('bgVideo');
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 let videoReady = false;
-let pendingScrollPercent = 0;
 
 function clamp01(x) { return Math.min(1, Math.max(0, x)); }
 
@@ -506,30 +525,21 @@ function getScrollPercent() {
 
 function setVideoTime(t) {
     if (!bgVideo) return;
-    // Some browsers seek more reliably with fastSeek (when supported).
-    if (typeof bgVideo.fastSeek === 'function') {
-        bgVideo.fastSeek(t);
-    } else {
-        bgVideo.currentTime = t;
-    }
+    if (typeof bgVideo.fastSeek === 'function') bgVideo.fastSeek(t);
+    else bgVideo.currentTime = t;
 }
 
 function syncVideoToScroll() {
     if (!bgVideo || prefersReducedMotion) return;
 
     const p = getScrollPercent();
-    pendingScrollPercent = p;
 
     if (!videoReady || !isFinite(bgVideo.duration) || bgVideo.duration <= 0) return;
 
-    // Keep it paused; we're "scrubbing"
     if (!bgVideo.paused) bgVideo.pause();
 
     // REVERSED: 0 scroll (top) = end of video, 1 scroll (bottom) = start of video
     const t = (1 - p) * bgVideo.duration;
-
-    // IMPORTANT FIX:
-    // No big threshold. Tiny scroll => tiny time change => immediate scrubbing attempt.
     setVideoTime(t);
 }
 
@@ -544,29 +554,23 @@ function onScrollOrResize() {
 }
 
 if (bgVideo) {
-    // Make sure we don't accidentally start playing
     bgVideo.autoplay = false;
     bgVideo.loop = false;
     bgVideo.controls = false;
 
     bgVideo.addEventListener('loadedmetadata', () => {
         videoReady = true;
-        // Snap to the correct frame for the CURRENT scroll position immediately
         syncVideoToScroll();
     });
 
-    // If browser fires canplay later, re-sync just in case
     bgVideo.addEventListener('canplay', () => {
         syncVideoToScroll();
         bgVideo.pause();
     });
 }
 
-// Keep in sync from the very first movement
 window.addEventListener('scroll', onScrollOrResize, { passive: true });
 window.addEventListener('resize', onScrollOrResize, { passive: true });
-
-// Initial sync on load (handles "already scrolled" or anchor links)
 syncVideoToScroll();
 
 /* ===== SLIDESHOW: 1.33s CADENCE (NO DRIFT) ===== */
@@ -644,7 +648,3 @@ window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change
 
 </body>
 </html>
-
-
-
-
