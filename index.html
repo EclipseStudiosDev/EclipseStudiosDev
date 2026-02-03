@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eclipse Studios</title>
+<link rel="icon" type="image/png" href="32x32.png">
+
+<!-- Basic SEO -->
+<meta name="description" content="Eclipse Studios is a Saudi-born game studio crafting atmospheric, story-driven experiences under the eclipse." />
+
+<!-- Social / Open Graph -->
+<meta property="og:title" content="Eclipse Studios" />
+<meta property="og:description" content="A Saudi game studio born under the eclipse, creating cinematic, immersive games." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://example.com/og-image.png" />
+
+<style>
+/* ===== RESET ===== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #070707;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* ===== BACKGROUND VIDEO (SCROLL-SYNC) ===== */
+.bg-video-wrap{
+    position: fixed;
+    inset: 0;
+    z-index: -7;          /* behind starfield (-6), everything */
+    pointer-events: none;
+    overflow: hidden;
+    background: #070707;  /* fallback */
+}
+.bg-video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;    /* full-screen background */
+    opacity: 0.9;         /* tweak to taste */
+    filter: saturate(1.05) contrast(1.05);
+}
+
+/* ===== CHEAP STARFIELD (FEW LAYERS, SLOW MOVE) ===== */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-6;
+    opacity:0.28;
+    background:
+      radial-gradient(1px 1px at 18% 22%, rgba(255,255,255,.9), transparent),
+      radial-gradient(1px 1px at 66% 48%, rgba(255,255,255,.8), transparent),
+      radial-gradient(1px 1px at 82% 14%, rgba(255,255,255,.8), transparent),
+      radial-gradient(1px 1px at 35% 76%, rgba(255,255,255,.75), transparent),
+      radial-gradient(1px 1px at 92% 72%, rgba(255,255,255,.75), transparent);
+    background-size: 420px 420px;
+    animation: starsMove 180s linear infinite;
+}
+@keyframes starsMove {
+    0% { background-position: 0 0; }
+    100% { background-position: -1600px 1600px; }
+}
+
+/* ===== LAYOUT ===== */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+/* ===== GLASS SECTION BOXES ===== */
+.glass-box {
+    background: rgba(18, 18, 18, 0.72);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.07);
+    box-shadow: 0 18px 60px rgba(0,0,0,0.65);
+    padding: 80px 60px;
+    margin: 120px auto;
+    backdrop-filter: blur(10px);
+}
+
+/* ===== HEADER ===== */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    height: 100px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: auto;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 0 10px rgba(255,153,0,0.55);
+}
+
+.logo-image {
+    height: 90px;
+    width: auto;
+}
+
+/* Nav links */
+.nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255,153,0,0.45);
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible {
+    text-shadow: 0 0 16px rgba(255,221,0,0.55);
+}
+
+/* Keyboard focus */
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid #ffdd00;
+    outline-offset: 3px;
+}
+
+/* Mobile menu toggle */
+.menu-toggle {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #fff;
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    text-shadow: 0 0 12px rgba(255,153,0,0.55);
+}
+
+/* ===== HERO ===== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 120px;
+}
+
+.hero-content {
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 9vw, 5rem);
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.hero h2 {
+    font-size: 1.6rem;
+    opacity: 0.85;
+    margin-bottom: 40px;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 16px 44px;
+    background: radial-gradient(circle, #ffdd00 0%, #ffaa00 40%, #ff8800 100%);
+    color: #000;
+    text-decoration: none;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 16px;
+    box-shadow: 0 10px 40px rgba(255,136,0,0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cta-button:hover,
+.cta-button:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 52px rgba(255,136,0,0.45);
+}
+
+/* ===== ABOUT ===== */
+.about-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    text-align: center;
+}
+.about-inner h2 {
+    font-size: 42px;
+    margin-bottom: 24px;
+}
+.about-inner p {
+    font-size: 18px;
+    opacity: 0.78;
+    line-height: 1.8;
+}
+
+/* ===== PROJECTS ===== */
+.section-title {
+    font-size: 46px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+/* Slideshow */
+.slideshow {
+    position: relative;
+    margin: 0 auto;
+    max-width: 1100px;
+    height: min(560px, 65vh);
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* IMPORTANT: transition duration = 1.33s */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.03);
+    transition: opacity 1.33s linear, transform 1.33s linear;
+    will-change: opacity, transform;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.slide-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    background: rgba(10, 10, 10, 0.6);
+    color: #fff;
+    font-size: 28px;
+    line-height: 46px;
+    display: grid;
+    place-items: center;
+    user-select: none;
+}
+.slide-arrow.left { left: 14px; }
+.slide-arrow.right { right: 14px; }
+
+/* Footer */
+footer {
+    padding: 60px 0;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+.social-links a {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-decoration: none;
+    transition: transform 0.2s ease, background 0.2s ease;
+    font-size: 20px;
+}
+.social-links a:hover,
+.social-links a:focus-visible {
+    background: radial-gradient(circle, #ffdd00 0%, #ffaa00 30%, #ff8800 60%, #ff6600 100%);
+    transform: translateY(-2px);
+    color: #000;
+}
+footer p {
+    color: rgba(255,255,255,0.45);
+    font-size: 14px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    nav {
+        padding: 10px 20px;
+        height: 80px;
+    }
+
+    .logo-image { height: 60px; }
+    .menu-toggle { display: block; }
+
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        right: 20px;
+        background: rgba(10,10,10,0.94);
+        flex-direction: column;
+        width: 200px;
+        padding: 10px 20px;
+        display: none;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-links.active { display: flex; }
+
+    .glass-box {
+        padding: 50px 22px;
+        margin: 80px 16px;
+        backdrop-filter: blur(8px);
+    }
+
+    .slideshow { height: 320px; }
+    .slide-arrow { width: 44px; height: 44px; font-size: 24px; line-height: 44px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Scroll-synced background video -->
+<div class="bg-video-wrap" aria-hidden="true">
+  <video
+    id="bgVideo"
+    class="bg-video"
+    src="Eclipse Animation.mp4"
+    preload="auto"
+    muted
+    playsinline
+  ></video>
+</div>
+
+<header id="top">
+    <nav>
+        <div class="logo-container">
+            <a href="#top"><img class="logo-image" src="Eclipse Studios Logo Clear.png" alt="Eclipse Studios logo" /></a>
+            <a href="#top" class="logo">ECLIPSE STUDIOS</a>
+        </div>
+
+        <button class="menu-toggle" id="menu-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+
+        <ul class="nav-links" id="nav-links">
+            <li><a href="#work">Work</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="glass-box hero-content">
+        <h1>Welcome to Eclipse Studios</h1>
+        <h2>A Saudi game studio born under the eclipse</h2>
+        <a href="#work" class="cta-button">View Our Work</a>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="container">
+        <div class="glass-box about-inner">
+            <h2>About Eclipse Studios</h2>
+            <p>
+                Eclipse Studios is a Saudi-born game studio focused on crafting atmospheric, story-driven experiences.
+                We blend cinematic visuals, tight gameplay, and emotional storytelling to create worlds that feel both
+                haunting and unforgettable — all under the glow of the eclipse.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- WORK -->
+<section id="work">
+    <div class="container">
+        <div class="glass-box">
+            <h2 class="section-title">Under Development</h2>
+
+            <div class="slideshow" aria-label="Game screenshots">
+                <div class="slides">
+                    <img src="images/game-image-0.png"  class="slide active" alt="Game Image">
+                    <img src="images/game-image-1.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-2.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-3.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-4.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-5.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-6.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-7.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-8.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-9.png"  class="slide" alt="Game Image">
+                    <img src="images/game-image-10.png" class="slide" alt="Game Image">
+                    <img src="images/game-image-11.png" class="slide" alt="Game Image">
+                    <img src="images/game-image-12.png" class="slide" alt="Game Image">
+                    <img src="images/game-image-13.png" class="slide" alt="Game Image">
+                    <img src="images/game-image-14.png" class="slide" alt="Game Image">
+                </div>
+
+                <button class="slide-arrow left" aria-label="Previous slide">‹</button>
+                <button class="slide-arrow right" aria-label="Next slide">›</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer id="contact">
+    <div class="container">
+        <div class="social-links">
+            <a href="#" aria-label="Twitter/X">𝕏</a>
+            <a href="#" aria-label="Discord">D</a>
+            <a href="#" aria-label="YouTube">▶</a>
+        </div>
+        <p>© 2025 Eclipse Studios. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+/* ===== MOBILE MENU ===== */
+const menuToggle = document.getElementById('menu-toggle');
+const navLinks = document.getElementById('nav-links');
+
+if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        const expanded = menuToggle.getAttribute('aria-expanded') === 'true';
+        menuToggle.setAttribute('aria-expanded', String(!expanded));
+    });
+}
+
+/* Close mobile menu after clicking anchor */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', () => {
+        if (navLinks?.classList.contains('active')) {
+            navLinks.classList.remove('active');
+            menuToggle?.setAttribute('aria-expanded', 'false');
+        }
+    });
+});
+
+/* ===== SCROLL-SYNC BACKGROUND VIDEO (TOP = END, BOTTOM = START) =====
+   Fix: remove the large seek threshold and use fastSeek when available,
+   so frames start changing immediately on the first pixels of scroll. */
+const bgVideo = document.getElementById('bgVideo');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let videoReady = false;
+let pendingScrollPercent = 0;
+
+function clamp01(x) { return Math.min(1, Math.max(0, x)); }
+
+function getScrollPercent() {
+    const doc = document.documentElement;
+    const maxScroll = Math.max(1, doc.scrollHeight - window.innerHeight);
+    return clamp01(window.scrollY / maxScroll);
+}
+
+function setVideoTime(t) {
+    if (!bgVideo) return;
+    // Some browsers seek more reliably with fastSeek (when supported).
+    if (typeof bgVideo.fastSeek === 'function') {
+        bgVideo.fastSeek(t);
+    } else {
+        bgVideo.currentTime = t;
+    }
+}
+
+function syncVideoToScroll() {
+    if (!bgVideo || prefersReducedMotion) return;
+
+    const p = getScrollPercent();
+    pendingScrollPercent = p;
+
+    if (!videoReady || !isFinite(bgVideo.duration) || bgVideo.duration <= 0) return;
+
+    // Keep it paused; we're "scrubbing"
+    if (!bgVideo.paused) bgVideo.pause();
+
+    // REVERSED: 0 scroll (top) = end of video, 1 scroll (bottom) = start of video
+    const t = (1 - p) * bgVideo.duration;
+
+    // IMPORTANT FIX:
+    // No big threshold. Tiny scroll => tiny time change => immediate scrubbing attempt.
+    setVideoTime(t);
+}
+
+let rafPending = false;
+function onScrollOrResize() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+        rafPending = false;
+        syncVideoToScroll();
+    });
+}
+
+if (bgVideo) {
+    // Make sure we don't accidentally start playing
+    bgVideo.autoplay = false;
+    bgVideo.loop = false;
+    bgVideo.controls = false;
+
+    bgVideo.addEventListener('loadedmetadata', () => {
+        videoReady = true;
+        // Snap to the correct frame for the CURRENT scroll position immediately
+        syncVideoToScroll();
+    });
+
+    // If browser fires canplay later, re-sync just in case
+    bgVideo.addEventListener('canplay', () => {
+        syncVideoToScroll();
+        bgVideo.pause();
+    });
+}
+
+// Keep in sync from the very first movement
+window.addEventListener('scroll', onScrollOrResize, { passive: true });
+window.addEventListener('resize', onScrollOrResize, { passive: true });
+
+// Initial sync on load (handles "already scrolled" or anchor links)
+syncVideoToScroll();
+
+/* ===== SLIDESHOW: 1.33s CADENCE (NO DRIFT) ===== */
+const slides = Array.from(document.querySelectorAll('.slideshow .slide'));
+const prevBtn = document.querySelector('.slideshow .slide-arrow.left');
+const nextBtn = document.querySelector('.slideshow .slide-arrow.right');
+
+let currentSlide = 0;
+
+function showSlide(i) {
+    if (!slides.length) return;
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (i + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+}
+
+function nextSlide() { showSlide(currentSlide + 1); }
+function prevSlide() { showSlide(currentSlide - 1); }
+
+let running = false;
+let targetTime = 0;
+let timeoutId = null;
+
+function scheduleNextTick() {
+    if (!running) return;
+    const now = performance.now();
+    const delay = Math.max(0, targetTime - now);
+
+    timeoutId = setTimeout(() => {
+        const now2 = performance.now();
+        if (now2 > targetTime + 1330) {
+            const missed = Math.floor((now2 - targetTime) / 1330);
+            targetTime += missed * 1330;
+        }
+
+        nextSlide();
+        targetTime += 1330;
+        scheduleNextTick();
+    }, delay);
+}
+
+function startAuto() {
+    if (prefersReducedMotion || slides.length <= 1) return;
+    if (running) return;
+    running = true;
+
+    targetTime = performance.now() + 1330;
+    scheduleNextTick();
+}
+
+function stopAuto() {
+    running = false;
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = null;
+}
+
+nextBtn?.addEventListener('click', () => nextSlide());
+prevBtn?.addEventListener('click', () => prevSlide());
+
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    stopAuto();
+    scrollTimeout = setTimeout(() => startAuto(), 150);
+}, { passive: true });
+
+showSlide(0);
+startAuto();
+
+window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change', (e) => {
+    if (e.matches) stopAuto();
+    else startAuto();
+});
+</script>
+
+</body>
+</html>
